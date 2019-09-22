@@ -306,6 +306,25 @@ class mod_assign_renderer extends plugin_renderer_base {
             }
         }
 
+        // Grading criteria preview. -NED-
+        global $PAGE;
+        $gradingmanager = get_grading_manager(context_module::instance($summary->coursemoduleid), 'mod_assign', 'submissions');
+        $gradingcontrollerpreview = '';
+        if ($gradingmethod = $gradingmanager->get_active_method()) {
+            $controller = $gradingmanager->get_controller($gradingmethod);
+            if ($controller->is_form_defined()) {
+                $gradingcontrollerpreview = $controller->render_preview($PAGE);
+            }
+        }
+        if (!empty($gradingcontrollerpreview)) {
+            $row = new html_table_row();
+            $cell1 = new html_table_cell(get_string('gradingmethodpreview', 'assign'));
+            $cell2 = new html_table_cell($gradingcontrollerpreview);
+            $row->cells = array($cell1, $cell2);
+            $t->data[] = $row;
+        }
+        // -NED-
+
         $time = time();
         if ($summary->duedate) {
             // Due date.
